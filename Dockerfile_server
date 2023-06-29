@@ -1,0 +1,5 @@
+FROM python:3
+
+RUN pip install http
+
+CMD python -m http.server --bind 127.0.0.1 9000
