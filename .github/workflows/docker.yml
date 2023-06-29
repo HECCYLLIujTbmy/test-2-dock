@@ -1,34 +1,20 @@
+name: Docker Actions
 
-name: Build and Run Docker images
-
-on: [push]
-
+on:
+  push:
+  
 jobs:
-  build:
+  build-and-run:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build and Run Docker_http
-        run: |
-          docker build -t docker_http -f Dockerfile_http .
-          docker run -d --name http_container -p 9000:9000 docker_http
-
-      - name: Wait for Docker_http to start
-        run: sleep 5
-
-      - name: Build and Run Docker_iproute
-        run: |
-          docker build -t docker_iproute -f Dockerfile_iproute .
-          docker run --name iproute_container docker_iproute
-
-      - name: Copy result.txt artifact
-        run: docker cp iproute_container:/result.txt .
-
-      - name: Upload result.txt artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: result.txt
-          path: result.txt
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Build and run container
+      run: |
+        docker build -t iproute2-container -f Dockerfile_iproute/Dockerfile .
+        docker build -t http-server-container -f Dockerfile_http/Dockerfile .
+        docker run -d -p 9000:9000 http-server-container
+        sleep 5s
+        docker run iproute2-container
