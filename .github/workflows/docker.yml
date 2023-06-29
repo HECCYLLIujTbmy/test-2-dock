@@ -1,0 +1,20 @@
+name: Docker Actions
+
+on:
+  push:
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and run container
+        run: |
+          docker build -t iproute2-container -f Dockerfile_iproute .
+          docker build -t http-server-container -f Dockerfile_http .
+          docker run -d -p 9000:9000 http-server-container
+          sleep 5s
+          docker run iproute2-container
